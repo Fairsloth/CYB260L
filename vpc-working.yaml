@@ -1,0 +1,62 @@
+# Description of what this change includes
+# Revision number
+# Date
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  Creates a VPC named VPC-CHRFAI7004 in us-west-2 with subnets spanning
+  at least three Availability Zones.
+
+Rules:
+  EnforceUsWest2:
+    Assertions:
+      - Assert:
+          Fn::Equals:
+            - !Ref "AWS::Region"
+            - us-west-2
+        AssertDescription: "This stack must be deployed in the us-west-2 region."
+
+Resources:
+  ChrFaiVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: VPC-CHRFAI7004
+
+  SubnetAZ1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref ChrFaiVPC
+      CidrBlock: 10.0.1.0/24
+      AvailabilityZone: !Select [0, !GetAZs ""]
+      Tags:
+        - Key: Name
+          Value: VPC-CHRFAI7004-Subnet-AZ1
+
+  SubnetAZ2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref ChrFaiVPC
+      CidrBlock: 10.0.2.0/24
+      AvailabilityZone: !Select [1, !GetAZs ""]
+      Tags:
+        - Key: Name
+          Value: VPC-CHRFAI7004-Subnet-AZ2
+
+  SubnetAZ3:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref ChrFaiVPC
+      CidrBlock: 10.0.3.0/24
+      AvailabilityZone: !Select [2, !GetAZs ""]
+      Tags:
+        - Key: Name
+          Value: VPC-CHRFAI7004-Subnet-AZ3
+
+Outputs:
+  VpcId:
+    Description: VPC ID of VPC-CHRFAI7004
+    Value: !Ref ChrFaiVPC
